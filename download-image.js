@@ -180,8 +180,10 @@ const addDownloadAllButton = ( element, blockType, attributes ) => {
 			continue;
 		}
 
-		ids.push( attributes.images[i].id );
+		ids.push( parseInt( attributes.images[i].id ) );
 	}
+
+	ids.sort();
 
 	if (ids.length === 0) {
 		return element;
@@ -200,7 +202,7 @@ const addDownloadAllButton = ( element, blockType, attributes ) => {
 				{
 					href: '/wp-load.php?download-image-collection=' + ids.join( '-' ),
 					rel: 'noopener noreferrer',
-					download: 'Assets.zip',
+					download: 'images',
 				},
 				'Download All',
 			)

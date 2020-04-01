@@ -15,7 +15,7 @@ div.download-image-btn a {
 .download-all-images-btn {
     width: 100%;
     text-align: right;
-    margin-top: 10px;
+    margin: 10px 0 50px !important;
 }
 
 .download-all-images-btn a {
