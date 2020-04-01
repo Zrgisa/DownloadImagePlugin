@@ -124,13 +124,19 @@ const addDownloadButton = ( element, blockType, attributes ) => {
 
 		children.push(
 			el(
-				'a',
+				'div',
 				{
-					href: url,
-					rel: 'noopener noreferrer',
-					download: ''
+					className: 'download-image-btn',
 				},
-				'Download'
+				el(
+					'a',
+					{
+						href: url,
+						rel: 'noopener noreferrer',
+						download: ''
+					},
+					'Download →'
+				)
 			)
 		);
 

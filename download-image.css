@@ -1,0 +1,13 @@
+div.download-image-btn {
+    padding: 5px 1px 10px;
+}
+
+div.download-image-btn a {
+    text-decoration: none;
+}
+
+.coblocks-gallery--item div.download-image-btn {
+    padding-top: 0;
+    margin-left: 10px;
+    line-height: 110%;
+}
