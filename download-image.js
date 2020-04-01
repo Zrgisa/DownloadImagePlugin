@@ -89,31 +89,46 @@ const addDownloadButton = ( element, blockType, attributes ) => {
 
 	let listElement = element;
 	let tree = [];
-	while (listElement != null && listElement.type !== 'ul')
-	{
+	while (listElement != null && listElement.type !== 'ul') {
 		tree.push(listElement);
 		listElement = React.Children.toArray(listElement.props.children)[0];
 	}
 
-	if (listElement === null)
-	{
+	if (listElement === null) {
 		return element;
 	}
 
 	const elements = React.Children.toArray(listElement.props.children);
 	let newElements = [];
+	const sizeRegex = /-\d+x\d+(\.[0-9a-zA-Z]*)?$/gm;
 
-	for (let i = 0; i < elements.length; ++i)
-	{
+	for (let i = 0; i < elements.length; ++i) {
 		let children = React.Children.toArray(elements[i].props.children);
+		let url = '';
+
+		for (let j = 0; j < children.length; ++j) {
+			if (children[j].type !== 'figure') {
+				continue;
+			}
+
+			const figChildren = React.Children.toArray(children[j].props.children);
+			for (let k = 0; k < figChildren.length; ++k) {
+				if (figChildren[k].type !== 'img') {
+					continue;
+				}
+
+				url = figChildren[k].props.src;
+				url = url.replace(sizeRegex, '$1');
+			}
+		}
 
 		children.push(
 			el(
 				'a',
 				{
-					href: 'https://google.com',
-					target: '_blank',
-					rel: 'noopener noreferrer'
+					href: url,
+					rel: 'noopener noreferrer',
+					download: ''
 				},
 				'Download'
 			)
