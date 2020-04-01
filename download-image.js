@@ -1,8 +1,13 @@
 const el = wp.element.createElement;
 const { __ } = wp.i18n;
 
+const supportedGalleries = {
+	'coblocks/gallery-masonry': 1,
+	'core/gallery': 1,
+};
+
 const addDownloadButtonAttributes = ( settings, name ) => {
-	if ( name !== 'coblocks/gallery-masonry' ) {
+	if ( !supportedGalleries[name] ) {
 		return settings;
 	}
 
@@ -22,7 +27,7 @@ const addDownloadButtonAttributes = ( settings, name ) => {
 
 const downloadControl = wp.compose.createHigherOrderComponent( function( BlockEdit ) {
 	return function( props ) {
-		if ( props.name !== 'coblocks/gallery-masonry' ) {
+		if ( !supportedGalleries[props.name] ) {
 			return el(
 				BlockEdit,
 				props
@@ -78,7 +83,7 @@ const downloadControl = wp.compose.createHigherOrderComponent( function( BlockEd
 }, 'withDownloadControls' );
 
 const addDownloadButton = ( element, blockType, attributes ) => {
-	if ( blockType.name !== 'coblocks/gallery-masonry' || !attributes.downloadEnabled ) {
+	if ( !supportedGalleries[blockType.name] || !attributes.downloadEnabled ) {
 		return element;
 	}
 
