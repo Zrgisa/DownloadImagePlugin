@@ -7,7 +7,7 @@ const supportedGalleries = {
 };
 
 const addDownloadButtonAttributes = ( settings, name ) => {
-	if ( !supportedGalleries[name] ) {
+	if (!supportedGalleries[name]) {
 		return settings;
 	}
 
@@ -27,10 +27,10 @@ const addDownloadButtonAttributes = ( settings, name ) => {
 
 const downloadControl = wp.compose.createHigherOrderComponent( function( BlockEdit ) {
 	return function( props ) {
-		if ( !supportedGalleries[props.name] ) {
+		if (!supportedGalleries[props.name]) {
 			return el(
 				BlockEdit,
-				props
+				props,
 			);
 		}
 
@@ -41,7 +41,7 @@ const downloadControl = wp.compose.createHigherOrderComponent( function( BlockEd
 			{},
 			el(
 				BlockEdit,
-				props
+				props,
 			),
 			el(
 				wp.blockEditor.InspectorControls,
@@ -50,60 +50,60 @@ const downloadControl = wp.compose.createHigherOrderComponent( function( BlockEd
 					wp.components.PanelBody,
 					{
 						title: 'Download Buttons',
-						initialOpen: false
+						initialOpen: false,
 					},
 					el(
 						wp.components.ToggleControl,
 						{
 							label: 'Download Single Image',
 							checked: downloadEnabled,
-							onChange: function () {
+							onChange: function() {
 								props.setAttributes( {
 									downloadEnabled: !downloadEnabled,
 								} );
-							}
-						}
+							},
+						},
 					),
 					el(
 						wp.components.ToggleControl,
 						{
 							label: 'Download All',
 							checked: downloadAllEnabled,
-							onChange: function () {
+							onChange: function() {
 								props.setAttributes( {
-									downloadEnabled: !downloadAllEnabled,
+									downloadAllEnabled: !downloadAllEnabled,
 								} );
-							}
-						}
-					)
-				)
-			)
+							},
+						},
+					),
+				),
+			),
 		);
 	};
 }, 'withDownloadControls' );
 
 const addDownloadButton = ( element, blockType, attributes ) => {
-	if ( !supportedGalleries[blockType.name] || !attributes.downloadEnabled ) {
+	if (!supportedGalleries[blockType.name] || !attributes.downloadEnabled) {
 		return element;
 	}
 
 	let listElement = element;
 	let tree = [];
 	while (listElement != null && listElement.type !== 'ul') {
-		tree.push(listElement);
-		listElement = React.Children.toArray(listElement.props.children)[0];
+		tree.push( listElement );
+		listElement = React.Children.toArray( listElement.props.children )[0];
 	}
 
 	if (listElement === null) {
 		return element;
 	}
 
-	const elements = React.Children.toArray(listElement.props.children);
+	const elements = React.Children.toArray( listElement.props.children );
 	let newElements = [];
 	const sizeRegex = /-\d+x\d+(\.[0-9a-zA-Z]*)?$/gm;
 
 	for (let i = 0; i < elements.length; ++i) {
-		let children = React.Children.toArray(elements[i].props.children);
+		let children = React.Children.toArray( elements[i].props.children );
 		let url = '';
 
 		for (let j = 0; j < children.length; ++j) {
@@ -111,14 +111,14 @@ const addDownloadButton = ( element, blockType, attributes ) => {
 				continue;
 			}
 
-			const figChildren = React.Children.toArray(children[j].props.children);
+			const figChildren = React.Children.toArray( children[j].props.children );
 			for (let k = 0; k < figChildren.length; ++k) {
 				if (figChildren[k].type !== 'img') {
 					continue;
 				}
 
 				url = figChildren[k].props.src;
-				url = url.replace(sizeRegex, '$1');
+				url = url.replace( sizeRegex, '$1' );
 			}
 		}
 
@@ -139,31 +139,78 @@ const addDownloadButton = ( element, blockType, attributes ) => {
 					{
 						href: url,
 						rel: 'noopener noreferrer',
-						download: ''
+						download: '',
 					},
-					'Download →'
-				)
-			)
+					'Download →',
+				),
+			),
 		);
 
-		newElements.push(React.cloneElement(
+		newElements.push( React.cloneElement(
 			elements[i],
 			{},
-			...children
-		));
+			...children,
+		) );
 	}
 
-	let lastElement = React.cloneElement(listElement, {}, ...newElements);
+	let lastElement = React.cloneElement( listElement, {}, ...newElements );
 	let k = tree.length - 1;
 
 	while (k >= 0) {
-		lastElement = React.cloneElement(tree[k], {}, lastElement);
+		lastElement = React.cloneElement( tree[k], {}, lastElement );
 		--k;
 	}
 
 	return lastElement;
 };
 
+const addDownloadAllButton = ( element, blockType, attributes ) => {
+	if (!supportedGalleries[blockType.name] || !attributes.downloadAllEnabled) {
+		return element;
+	}
+
+	if (!attributes || !attributes.images || !attributes.images.length) {
+		return element;
+	}
+
+	let ids = [];
+
+	for (let i = 0; i < attributes.images.length; ++i) {
+		if (!attributes.images[i].id) {
+			continue;
+		}
+
+		ids.push( attributes.images[i].id );
+	}
+
+	if (ids.length === 0) {
+		return element;
+	}
+
+	let children = React.Children.toArray( element.props.children );
+
+	children.push(
+		el(
+			'div',
+			{
+				className: 'download-all-images-btn',
+			},
+			el(
+				'a',
+				{
+					href: '/wp-load.php?download-image-collection=' + ids.join( '-' ),
+					rel: 'noopener noreferrer',
+					download: 'Assets.zip',
+				},
+				'Download All',
+			)
+		)
+	);
+
+	return React.cloneElement( element, {}, ...children );
+};
+
 wp.hooks.addFilter( 'editor.BlockEdit', 'download-image/download-controls', downloadControl );
 wp.hooks.addFilter( 'blocks.registerBlockType', 'download-image/attribute/download', addDownloadButtonAttributes );
 wp.hooks.addFilter( 'blocks.getSaveElement', 'download-image/add-download-button', addDownloadButton );
+wp.hooks.addFilter( 'blocks.getSaveElement', 'download-image/add-download-all-button', addDownloadAllButton );

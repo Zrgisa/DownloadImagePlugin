@@ -11,3 +11,17 @@ div.download-image-btn a {
     top: -12px;
     position: relative;
 }
+
+.download-all-images-btn {
+    width: 100%;
+    text-align: right;
+    margin-top: 10px;
+}
+
+.download-all-images-btn a {
+    background: #111111;
+    color: white;
+    padding: 10px 25px;
+    display: inline-block;
+    text-decoration: none;
+}
