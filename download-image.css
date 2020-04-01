@@ -7,7 +7,7 @@ div.download-image-btn a {
 }
 
 .coblocks-gallery--item div.download-image-btn {
-    padding-top: 0;
-    margin-left: 10px;
-    line-height: 110%;
+    line-height: 170%;
+    top: -12px;
+    position: relative;
 }

@@ -122,11 +122,17 @@ const addDownloadButton = ( element, blockType, attributes ) => {
 			}
 		}
 
+		let className = 'download-image-btn';
+
+		if (blockType.name === 'coblocks/gallery-masonry') {
+			className += ' coblocks-gallery--figure';
+		}
+
 		children.push(
 			el(
 				'div',
 				{
-					className: 'download-image-btn',
+					className: className,
 				},
 				el(
 					'a',
