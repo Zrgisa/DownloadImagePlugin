@@ -101,27 +101,18 @@ const addDownloadButton = ( element, blockType, attributes ) => {
 	for (let i = 0; i < elements.length; ++i)
 	{
 		let children = React.Children.toArray(elements[i].props.children);
-		let shouldAdd = true;
 
-		for (let j = 0; j < children.length; ++j) {
-			if (children[j].type === 'span') {
-				shouldAdd = false;
-			}
-		}
-
-		if (shouldAdd) {
-			children.push(
-				el(
-					'a',
-					{
-						href: 'https://google.com',
-						target: '_blank',
-						rel: 'noopener noreferrer'
-					},
-					'Download'
-				)
-			);
-		}
+		children.push(
+			el(
+				'a',
+				{
+					href: 'https://google.com',
+					target: '_blank',
+					rel: 'noopener noreferrer'
+				},
+				'Download'
+			)
+		);
 
 		newElements.push(React.cloneElement(
 			elements[i],
