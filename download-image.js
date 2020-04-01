@@ -20,6 +20,10 @@ const addDownloadButtonAttributes = ( settings, name ) => {
 			type: 'boolean',
 			default: false,
 		},
+		downloadAllName: {
+			type: 'string',
+			default: 'images',
+		},
 	} );
 
 	return settings;
@@ -34,7 +38,7 @@ const downloadControl = wp.compose.createHigherOrderComponent( function( BlockEd
 			);
 		}
 
-		const { downloadEnabled, downloadAllEnabled } = props.attributes;
+		const { downloadEnabled, downloadAllEnabled, downloadAllName } = props.attributes;
 
 		return el(
 			wp.element.Fragment,
@@ -72,6 +76,18 @@ const downloadControl = wp.compose.createHigherOrderComponent( function( BlockEd
 							onChange: function() {
 								props.setAttributes( {
 									downloadAllEnabled: !downloadAllEnabled,
+								} );
+							},
+						},
+					),
+					el(
+						wp.components.TextControl,
+						{
+							label: 'Archive Name',
+							value: downloadAllName,
+							onChange: function (name) {
+								props.setAttributes( {
+									downloadAllName: name,
 								} );
 							},
 						},
@@ -139,7 +155,7 @@ const addDownloadButton = ( element, blockType, attributes ) => {
 					{
 						href: url,
 						rel: 'noopener noreferrer',
-						download: '',
+						download: true,
 					},
 					'Download →',
 				),
@@ -200,9 +216,9 @@ const addDownloadAllButton = ( element, blockType, attributes ) => {
 			el(
 				'a',
 				{
-					href: '/wp-load.php?download-image-collection=' + ids.join( '-' ),
+					href: '/wp-load.php?name=' + attributes.downloadAllName + '&download-image-collection=' + ids.join( '-' ),
 					rel: 'noopener noreferrer',
-					download: 'images',
+					download: true,
 				},
 				'Download All',
 			)

@@ -28,25 +28,39 @@ function enqueue_download_image_css()
     );
 }
 
-function do_redirect_to_file($filename)
+function do_redirect_to_file($hash, $filename)
 {
-    wp_redirect(wp_upload_dir()['baseurl'].'/'.$filename);
+    wp_redirect(wp_upload_dir()['baseurl'].'/download-image-archives/'.$hash.'/'.$filename);
     exit();
 }
 
 function download_collection_api()
 {
     $param = isset($_GET['download-image-collection']) ? $_GET['download-image-collection'] : null;
+    $name  = isset($_GET['name']) ? $_GET['name'] : 'images';
 
     if (empty($param)) {
         return;
     }
 
-    $filename = md5($param).'.zip';
-    $path     = wp_upload_dir()['basedir'].'/'.$filename;
+    $uploadDir = wp_upload_dir()['basedir'].'/download-image-archives';
+
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir);
+    }
+
+    $hashDir  = md5($param);
+    $hashPath = $uploadDir.'/'.$hashDir;
+
+    if (!file_exists($hashPath)) {
+        mkdir($hashPath);
+    }
+
+    $filename = $name.'.zip';
+    $path     = $hashPath.'/'.$filename;
 
     if (file_exists($path)) {
-        do_redirect_to_file($filename);
+        do_redirect_to_file($hashDir, $filename);
         return;
     }
 
@@ -70,7 +84,7 @@ function download_collection_api()
 
     $zip->close();
 
-    do_redirect_to_file($filename);
+    do_redirect_to_file($hashDir, $filename);
 }
 
 add_action('enqueue_block_editor_assets', 'enqueue_download_image_editor_extension');
